@@ -29,9 +29,9 @@
 #include "common/HPMDataCheck.h"
 
 HPExport struct hplugin_info pinfo = {
-	"hashtable",     // Plugin name
+	"hashtable",         // Plugin name
 	SERVER_TYPE_MAP,     // Which server types this plugin works with?
-	"0.3.0",             // Plugin version
+	"0.3.1",             // Plugin version
 	HPM_VERSION,         // HPM Version (don't change, macro is automatically updated)
 };
 
@@ -340,31 +340,37 @@ static void htreg_defaults(void)
 
 HPExport void server_preinit (void)
 {
-	htreg_defaults();
+	if (SERVER_TYPE == SERVER_TYPE_MAP) {
+		htreg_defaults();
+	}
 }
 
 HPExport void plugin_init (void)
 {
-	htreg_init();
+	if (SERVER_TYPE == SERVER_TYPE_MAP) {
+		htreg_init();
 
-	addScriptCommand("htnew", "", htnew);
-	addScriptCommand("htget", "is?", htget);
-	addScriptCommand("htput", "isv", htput);
-	addScriptCommand("htclear", "i", htclear);
-	addScriptCommand("htdelete", "i", htdelete);
-	addScriptCommand("htsize", "i", htsize);
-	addScriptCommand("htexists", "i", htexists);
+		addScriptCommand("htnew", "", htnew);
+		addScriptCommand("htget", "is?", htget);
+		addScriptCommand("htput", "isv", htput);
+		addScriptCommand("htclear", "i", htclear);
+		addScriptCommand("htdelete", "i", htdelete);
+		addScriptCommand("htsize", "i", htsize);
+		addScriptCommand("htexists", "i", htexists);
 
-	addScriptCommand("htiterator", "i", htiterator);
-	addScriptCommand("htifirstkey", "i", htifirstkey);
-	addScriptCommand("htilastkey", "i", htilastkey);
-	addScriptCommand("htinextkey", "i", htinextkey);
-	addScriptCommand("htiprevkey", "i", htiprevkey);
-	addScriptCommand("hticheck", "i", hticheck);
-	addScriptCommand("htidelete", "i", htidelete);
+		addScriptCommand("htiterator", "i", htiterator);
+		addScriptCommand("htifirstkey", "i", htifirstkey);
+		addScriptCommand("htilastkey", "i", htilastkey);
+		addScriptCommand("htinextkey", "i", htinextkey);
+		addScriptCommand("htiprevkey", "i", htiprevkey);
+		addScriptCommand("hticheck", "i", hticheck);
+		addScriptCommand("htidelete", "i", htidelete);
+	}
 }
 
 HPExport void plugin_final (void)
 {
-	htreg_final();
+	if (SERVER_TYPE == SERVER_TYPE_MAP) {
+		htreg_final();
+	}
 }
