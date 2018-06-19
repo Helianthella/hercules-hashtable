@@ -1,0 +1,7 @@
+-	script	hashtable-ci-test	FAKE_NPC,{
+	end;
+
+OnInit:
+	mapquit(hashtable_test(true));
+	end;
+}

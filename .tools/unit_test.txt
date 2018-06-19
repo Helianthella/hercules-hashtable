@@ -1,10 +1,20 @@
--	script	hashtable-test	FAKE_NPC,{
+function	script	hashtable_test	{
+	.use_debugmes = getarg(0);
+
 	function assert {
 		if (getarg(0)) {
 			.stats[1]++;
-			mesf("\033[0;32mSuccess:\033[0m %s.", getarg(1));
+			if (.use_debugmes) {
+				debugmes(sprintf("\033[0;32mSuccess:\033[0m %s.", getarg(1)));
+			} else {
+				mesf("Success: %s.", getarg(1));
+			}
 		} else {
-			mesf("\033[0;31mError:\033[0m %s.", getarg(1));
+			if (.use_debugmes) {
+				debugmes(sprintf("\033[0;31mError:\033[0m %s.", getarg(1)));
+			} else {
+				mesf("Error: %s.", getarg(1));
+			}
 		}
 		return .stats[0]++;
 	}
@@ -52,6 +62,11 @@
 	assert(htdelete(1), "delete hashtable 1");
 	assert(htdelete(3), "delete hashtable 3");
 
-	mesf("Tests complete. [%02d/%02d]", .stats[1], .stats[0]);
-	mapquit(.stats[0] - .stats[1]);
+	if (.use_debugmes) {
+		debugmes(sprintf("Tests complete. [%02d/%02d]", .stats[1], .stats[0]));
+	} else {
+		mesf("Tests complete. [%02d/%02d]", .stats[1], .stats[0]);
+	}
+
+	return (.stats[0] - .stats[1]);
 }
