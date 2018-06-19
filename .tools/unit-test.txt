@@ -40,9 +40,9 @@
 	assert(htinextkey(1) == "key 1", "forward iterator 1 to next (first) key");
 	assert(htinextkey(1) == "key 2", "forward iterator 1 to next key");
 	assert(htinextkey(1) == "key 3", "forward iterator 1 to next key");
-	assert(htiexists(1), "check if key exists in iterator 1");
+	assert(hticheck(1), "check if key exists in iterator 1");
 	assert(htinextkey(1) == "", "forward iterator 1 to next key");
-	assert(htiexists(1) == 0, "check if key exists in iterator 1");
+	assert(hticheck(1) == 0, "check if key exists in iterator 1");
 	assert(htiprevkey(1) == "key 3", "rewind iterator 1 to prev key");
 	assert(htiprevkey(1) == "key 2", "rewind iterator 1 to prev key");
 	assert(htilastkey(1) == "key 3", "forward iterator 1 to last key");
@@ -53,5 +53,5 @@
 	assert(htdelete(3), "delete hashtable 3");
 
 	mesf("Tests complete. [%02d/%02d]", .stats[1], .stats[0]);
-	charcommand("@mapexit"); // dirty workaround
+	mapquit(.stats[0] - .stats[1]);
 }
