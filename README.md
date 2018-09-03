@@ -1,5 +1,5 @@
 # Hash table plugin for Hercules
-[![Build Status](https://semaphoreci.com/api/v1/mekolat/hercules-hashtable/branches/master/badge.svg)](https://semaphoreci.com/mekolat/hercules-hashtable)
+[![Build Status](https://semaphoreci.com/api/v1/helianthella/hercules-hashtable/branches/master/badge.svg)](https://semaphoreci.com/helianthella/hercules-hashtable)
 
 The documentation is in [doc] and the plugin is in [src].<br>
 You do not need [.tools], as this is only used for unit tests.
