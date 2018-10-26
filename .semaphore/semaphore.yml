@@ -1,0 +1,38 @@
+version: v1.0
+name: hercules-hashtable
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+execution_time_limit:
+  minutes: 15
+
+blocks:
+  - name: "Unit tests"
+    task:
+      jobs:
+      - name: Hercules
+        commands:
+          # building
+          - checkout
+          - git clone --depth 1 git://github.com/HerculesWS/Hercules.git herc
+          - cp src/hashtable.c herc/src/plugins
+          - pushd herc
+          - sudo apt-get -qq update # the apt cache is broken on sem 2.0
+          - sudo apt-get -y -qq install libmysqlclient-dev mysql-client # usually I'd want mariadb-client but it's broken on sem 2.0
+          - ./tools/ci/travis.sh build --enable-debug --enable-Werror --enable-buildbot
+          - make plugin.hashtable
+          # database setup
+          - sem-service start mysql
+          - mysql --host=0.0.0.0 -uroot -e "CREATE DATABASE ragnarok;"
+          - mysql --host=0.0.0.0 -uroot --database=ragnarok < sql-files/main.sql
+          - mysql --host=0.0.0.0 -uroot --database=ragnarok < sql-files/logs.sql
+          - mysql --host=0.0.0.0 -uroot -e "GRANT SELECT,INSERT,UPDATE,DELETE ON ragnarok.* TO 'ragnarok'@'%' IDENTIFIED BY 'ragnarok';"
+          # configuration
+          - 'echo -e "sql_connection: {\n\tdb_hostname: \"0.0.0.0\"\n\tdb_username: \"ragnarok\"\n\tdb_password: \"ragnarok\"\n\tdb_database: \"ragnarok\"\n}" > conf/semaphore_sql_connection.conf'
+          - 'echo -e "map_configuration: {\n\t@include \"conf/semaphore_sql_connection.conf\"\n}" > conf/import/map-server.conf'
+          - 'echo -e "inter_configuration: {\n\t@include \"conf/semaphore_sql_connection.conf\"\n}" > conf/import/inter-server.conf'
+          # unit tests
+          - cp ../.tools/scripts/unit_test.txt npc/dev/hash_unit_test.txt
+          - cp ../.tools/scripts/ci_test.txt npc/dev/hash_ci_test.txt
+          - ./map-server --run-once --load-plugin script_mapquit --load-plugin hashtable --load-script npc/dev/hash_unit_test.txt --load-script npc/dev/hash_ci_test.txt
