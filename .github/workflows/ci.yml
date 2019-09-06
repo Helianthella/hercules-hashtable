@@ -1,0 +1,46 @@
+name: CI
+
+on: [push]
+
+jobs:
+  gcc:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Checkout Hercules
+      run: git clone --depth 1 git://github.com/HerculesWS/Hercules.git herc
+
+    - name: Copy plugin
+      run: cp src/hashtable.c herc/src/plugins
+
+    - name: Update apt
+      run: sudo apt-get -qq update
+    - name: Install build requisites
+      run: sudo apt-get -y -qq install zlib1g-dev make gcc libpcre3-dev libmysqlclient-dev mysql-client
+
+    - name: Build Hercules
+      run: |
+        pushd herc
+        ./tools/ci/travis.sh build --enable-debug --enable-Werror --enable-buildbot
+
+    - name: Build hercules-hashtable
+      run: make plugin.hashtable
+
+    - name: Set up SQL db
+      run: |
+        ./tools/ci/travis.sh createdb ragnarok ragnarok ragnarok
+        ./tools/ci/travis.sh importdb ragnarok ragnarok ragnarok
+        ./tools/ci/travis.sh adduser ragnarok ragnarok ragnarok ragnarok ragnarok # ew
+
+    - name: Configure Hercules for SQL
+      run: |
+        echo -e "sql_connection: {\n\tdb_hostname: \"localhost\"\n\tdb_username: \"ragnarok\"\n\tdb_password: \"ragnarok\"\n\tdb_database: \"ragnarok\"\n}" > conf/semaphore_sql_connection.conf
+        echo -e "map_configuration: {\n\t@include \"conf/semaphore_sql_connection.conf\"\n}" > conf/import/map-server.conf
+        echo -e "inter_configuration: {\n\t@include \"conf/semaphore_sql_connection.conf\"\n}" > conf/import/inter-server.conf
+
+    - name: Run unit tests
+      run: bash ../.tools/ci/jobs/unit_tests.sh
