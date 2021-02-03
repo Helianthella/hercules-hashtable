@@ -1,17 +1,17 @@
 function	script	hashtable_test	{
-	.use_debugmes = getarg(0);
+	.use_consolemes = getarg(0);
 
 	function assert {
 		if (getarg(0)) {
 			.stats[1]++;
-			if (.use_debugmes) {
-				debugmes("\033[0;32mSuccess:\033[0m %s.", getarg(1));
+			if (.use_consolemes) {
+				consolemes(CONSOLEMES_DEBUG, "\033[0;32mSuccess:\033[0m %s.", getarg(1));
 			} else {
 				mesf("Success: %s.", getarg(1));
 			}
 		} else {
-			if (.use_debugmes) {
-				debugmes("\033[0;31mError:\033[0m %s.", getarg(1));
+			if (.use_consolemes) {
+				consolemes(CONSOLEMES_DEBUG, "\033[0;31mError:\033[0m %s.", getarg(1));
 			} else {
 				mesf("Error: %s.", getarg(1));
 			}
@@ -62,8 +62,8 @@ function	script	hashtable_test	{
 	assert(htdelete(1), "delete hashtable 1");
 	assert(htdelete(3), "delete hashtable 3");
 
-	if (.use_debugmes) {
-		debugmes("Tests complete. [%02d/%02d]", .stats[1], .stats[0]);
+	if (.use_consolemes) {
+		consolemes(CONSOLEMES_DEBUG, "Tests complete. [%02d/%02d]", .stats[1], .stats[0]);
 	} else {
 		mesf("Tests complete. [%02d/%02d]", .stats[1], .stats[0]);
 	}
