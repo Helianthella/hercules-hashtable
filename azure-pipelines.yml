@@ -1,0 +1,8 @@
+pool:
+  vmImage: 'Ubuntu 16.04'
+
+- script: |
+    bash .tools/ci/setup.sh
+    pushd herc
+    bash ../.tools/ci/jobs/unit_tests.sh
+  displayName: 'build & test'
